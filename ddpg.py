@@ -89,15 +89,15 @@ class OrnsteinUhlenbeckNoise:
 
 
 def train(mu, mu_target, q, q_target, memory, q_optimizer, mu_optimizer):
-    s,a,r,s_prime,done_mask  = memory.sample(batch_size)
+    s, a, r, s_prime, done_mask = memory.sample(batch_size)
     
     target = r + gamma * q_target(s_prime, mu_target(s_prime))
-    q_loss = F.smooth_l1_loss(q(s,a), target.detach())
+    q_loss = F.smooth_l1_loss(q(s, a), target.detach())
     q_optimizer.zero_grad()
     q_loss.backward()
     q_optimizer.step()
     
-    mu_loss = -q(s, mu(s)).mean() # That's all for the policy loss.
+    mu_loss = -q(s, mu(s)).mean()  # That's all for the policy loss.
     mu_optimizer.zero_grad()
     mu_loss.backward()
     mu_optimizer.step()
@@ -121,13 +121,13 @@ def main():
     print_interval = 20
 
     mu_optimizer = optim.Adam(mu.parameters(), lr=lr_mu)
-    q_optimizer  = optim.Adam(q.parameters(), lr=lr_q)
+    q_optimizer = optim.Adam(q.parameters(), lr=lr_q)
     ou_noise = OrnsteinUhlenbeckNoise(mu=np.zeros(1))
 
     for n_epi in range(10000):
         s = env.reset()
         
-        for t in range(300):  # maximum length of episode is 200 for Pendulum-v0
+        for t in range(100):  # maximum length of episode is 200 for Pendulum-v0
             a = mu(torch.from_numpy(s).float()) 
             a = a.item() + ou_noise()[0]
             s_prime, r, done, info = env.step([a])
@@ -138,7 +138,7 @@ def main():
             if done:
                 break              
                 
-        if memory.size()>2000:
+        if memory.size() > 2000:
             for i in range(10):
                 train(mu, mu_target, q, q_target, memory, q_optimizer, mu_optimizer)
                 soft_update(mu, mu_target)

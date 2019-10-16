@@ -63,7 +63,7 @@ class Qnet(nn.Module):
 
 def train(q, q_target, memory, optimizer):
     for i in range(10):
-        s,a,r,s_prime,done_mask = memory.sample(batch_size)
+        s, a, r, s_prime, done_mask = memory.sample(batch_size)
 
         q_out = q(s)
         q_a = q_out.gather(1,a)

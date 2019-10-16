@@ -9,6 +9,7 @@ from torch.distributions import Categorical
 learning_rate = 0.0002
 gamma         = 0.98
 
+
 class Policy(nn.Module):
     def __init__(self):
         super(Policy, self).__init__()
@@ -45,12 +46,12 @@ def main():
     
     for n_epi in range(10000):
         s = env.reset()
-        for t in range(501): # CartPole-v1 forced to terminates at 500 step.
+        for t in range(501):  # CartPole-v1 forced to terminates at 500 step.
             prob = pi(torch.from_numpy(s).float())
             m = Categorical(prob)
             a = m.sample()
             s_prime, r, done, info = env.step(a.item())
-            pi.put_data((r,torch.log(prob[a])))
+            pi.put_data((r, torch.log(prob[a])))
             
             s = s_prime
             score += r
@@ -63,6 +64,7 @@ def main():
             print("# of episode :{}, avg score : {}".format(n_epi, score/print_interval))
             score = 0.0
     env.close()
-    
+
+
 if __name__ == '__main__':
     main()

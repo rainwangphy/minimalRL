@@ -62,9 +62,9 @@ class QNet(nn.Module):
         super(QNet, self).__init__()
         
         self.fc_s = nn.Linear(3, 64)
-        self.fc_a = nn.Linear(1,64)
+        self.fc_a = nn.Linear(1, 64)
         self.fc_q = nn.Linear(128, 32)
-        self.fc_3 = nn.Linear(32,1)
+        self.fc_3 = nn.Linear(32, 1)
 
     def forward(self, x, a):
         h1 = F.relu(self.fc_s(x))

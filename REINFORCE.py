@@ -7,7 +7,7 @@ from torch.distributions import Categorical
 
 #Hyperparameters
 learning_rate = 0.0002
-gamma         = 0.98
+gamma = 0.98
 
 
 class Policy(nn.Module):

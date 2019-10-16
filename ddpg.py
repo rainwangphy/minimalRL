@@ -13,7 +13,8 @@ lr_q         = 0.001
 gamma        = 0.99
 batch_size   = 32
 buffer_limit = 50000
-tau          = 0.005 # for target network soft update
+tau          = 0.005  # for target network soft update
+
 
 class ReplayBuffer():
     def __init__(self):
@@ -41,6 +42,7 @@ class ReplayBuffer():
     def size(self):
         return len(self.buffer)
 
+
 class MuNet(nn.Module):
     def __init__(self):
         super(MuNet, self).__init__()
@@ -53,6 +55,7 @@ class MuNet(nn.Module):
         x = F.relu(self.fc2(x))
         mu = torch.tanh(self.fc_mu(x))*2 # Multipled by 2 because the action space of the Pendulum-v0 is [-2,2]
         return mu
+
 
 class QNet(nn.Module):
     def __init__(self):
@@ -71,6 +74,7 @@ class QNet(nn.Module):
         q = self.fc_3(q)
         return q
 
+
 class OrnsteinUhlenbeckNoise:
     def __init__(self, mu):
         self.theta, self.dt, self.sigma = 0.1, 0.01, 0.1
@@ -82,7 +86,8 @@ class OrnsteinUhlenbeckNoise:
                 self.sigma * np.sqrt(self.dt) * np.random.normal(size=self.mu.shape)
         self.x_prev = x
         return x
-      
+
+
 def train(mu, mu_target, q, q_target, memory, q_optimizer, mu_optimizer):
     s,a,r,s_prime,done_mask  = memory.sample(batch_size)
     
@@ -92,15 +97,17 @@ def train(mu, mu_target, q, q_target, memory, q_optimizer, mu_optimizer):
     q_loss.backward()
     q_optimizer.step()
     
-    mu_loss = -q(s,mu(s)).mean() # That's all for the policy loss.
+    mu_loss = -q(s, mu(s)).mean() # That's all for the policy loss.
     mu_optimizer.zero_grad()
     mu_loss.backward()
     mu_optimizer.step()
-    
+
+
 def soft_update(net, net_target):
     for param_target, param in zip(net_target.parameters(), net.parameters()):
         param_target.data.copy_(param_target.data * (1.0 - tau) + param.data * tau)
-    
+
+
 def main():
     env = gym.make('Pendulum-v0')
     memory = ReplayBuffer()
@@ -120,12 +127,12 @@ def main():
     for n_epi in range(10000):
         s = env.reset()
         
-        for t in range(300): # maximum length of episode is 200 for Pendulum-v0
+        for t in range(300):  # maximum length of episode is 200 for Pendulum-v0
             a = mu(torch.from_numpy(s).float()) 
             a = a.item() + ou_noise()[0]
             s_prime, r, done, info = env.step([a])
-            memory.put((s,a,r/100.0,s_prime,done))
-            score +=r
+            memory.put((s, a, r/100.0, s_prime, done))
+            score += r
             s = s_prime
 
             if done:
@@ -137,11 +144,12 @@ def main():
                 soft_update(mu, mu_target)
                 soft_update(q,  q_target)
         
-        if n_epi%print_interval==0 and n_epi!=0:
+        if n_epi % print_interval == 0 and n_epi != 0:
             print("# of episode :{}, avg score : {:.1f}".format(n_epi, score/print_interval))
             score = 0.0
 
     env.close()
+
 
 if __name__ == '__main__':
     main()

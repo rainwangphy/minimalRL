@@ -36,6 +36,7 @@ class Policy(nn.Module):
             self.optimizer.step()
         self.data = []
 
+
 def main():
     env = gym.make('CartPole-v1')
     pi = Policy()

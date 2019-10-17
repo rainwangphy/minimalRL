@@ -21,7 +21,8 @@ Implementations of basic RL algorithms with minimal lines of codes! (PyTorch bas
 6. [A3C](https://github.com/seungeunrho/minimalRL/blob/master/a3c.py) (129 lines)
 7. [ACER](https://github.com/seungeunrho/minimalRL/blob/master/acer.py) (149 lines)
 8. [A2C](https://github.com/seungeunrho/minimalRL/blob/master/a2c.py) added! (188 lines)
-9. Any suggestion ..?
+<!--9. Any suggestion ..?-->
+
 
 
 ## Dependencies

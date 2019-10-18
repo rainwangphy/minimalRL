@@ -53,7 +53,7 @@ class MuNet(nn.Module):
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        mu = torch.tanh(self.fc_mu(x))*2 # Multipled by 2 because the action space of the Pendulum-v0 is [-2,2]
+        mu = torch.tanh(self.fc_mu(x))*2  # Multipled by 2 because the action space of the Pendulum-v0 is [-2,2]
         return mu
 
 
@@ -124,7 +124,7 @@ def main():
     q_optimizer = optim.Adam(q.parameters(), lr=lr_q)
     ou_noise = OrnsteinUhlenbeckNoise(mu=np.zeros(1))
 
-    for n_epi in range(10000):
+    for n_epi in range(2000):
         s = env.reset()
         
         for t in range(100):  # maximum length of episode is 200 for Pendulum-v0
@@ -147,6 +147,17 @@ def main():
         if n_epi % print_interval == 0 and n_epi != 0:
             print("# of episode :{}, avg score : {:.1f}".format(n_epi, score/print_interval))
             score = 0.0
+
+    #  test the trained networks
+    # s = env.reset()
+    # for test_epi in range(200):
+    #     a = mu(torch.from_numpy(s).float())
+    #     a = a.item() + ou_noise()[0]
+    #     s_prime, r, done, info = env.step([a])
+    #     env.render('human')
+    #     s = s_prime
+    #     if done:
+    #         s = env.reset()
 
     env.close()
 

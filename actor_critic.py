@@ -91,7 +91,7 @@ def main():
             
             model.train_net()
             
-        if n_epi%print_interval == 0 and n_epi != 0:
+        if n_epi % print_interval == 0 and n_epi != 0:
             print("# of episode :{}, avg score : {:.1f}".format(n_epi, score/print_interval))
             score = 0.0
     env.close()

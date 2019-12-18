@@ -1,12 +1,11 @@
 import gym
+import numpy as np
 import torch
+import torch.multiprocessing as mp
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.distributions import Categorical
-import torch.multiprocessing as mp
-import time
-import numpy as np
 
 # Hyperparameters
 n_train_processes = 3
@@ -131,7 +130,7 @@ def test(step_idx, model):
             s = s_prime
             score += r
         done = False
-    print(f"Step # :{step_idx}, avg score : {score/num_test:.1f}")
+    print(f"Step # :{step_idx}, avg score : {score / num_test:.1f}")
 
     env.close()
 
@@ -164,7 +163,7 @@ if __name__ == '__main__':
 
             s_lst.append(s)
             a_lst.append(a)
-            r_lst.append(r/100.0)
+            r_lst.append(r / 100.0)
             mask_lst.append(1 - done)
 
             s = s_prime
@@ -181,8 +180,8 @@ if __name__ == '__main__':
 
         pi = model.pi(s_vec, softmax_dim=1)
         pi_a = pi.gather(1, a_vec).reshape(-1)
-        loss = -(torch.log(pi_a) * advantage.detach()).mean() +\
-            F.smooth_l1_loss(model.v(s_vec).reshape(-1), td_target_vec)
+        loss = -(torch.log(pi_a) * advantage.detach()).mean() + \
+               F.smooth_l1_loss(model.v(s_vec).reshape(-1), td_target_vec)
 
         optimizer.zero_grad()
         loss.backward()

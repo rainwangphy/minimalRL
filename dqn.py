@@ -7,11 +7,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+from tensorboard_logger import configure, log_value
+
+configure("dqn_result", flush_secs=1)
+
 # Hyperparameters
 learning_rate = 0.0005
 gamma = 0.98
 buffer_limit = 50000
 batch_size = 32
+
+gym.logger.set_level(40)
 
 
 class ReplayBuffer():
@@ -109,6 +115,7 @@ def main():
             q_target.load_state_dict(q.state_dict())
             print("# of episode :{}, avg score : {:.1f}, buffer size : {}, epsilon : {:.1f}%".format(
                 n_epi, score / print_interval, memory.size(), epsilon * 100))
+            log_value('reward', score / print_interval, n_epi)
             score = 0.0
     env.close()
 
